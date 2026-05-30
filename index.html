@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Mr. Shopper — Compara precios y ahorra</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#1e293b;min-height:100vh}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px}
+#disclaimer{background:#fefce8;border-bottom:2px solid #fde68a;padding:10px 20px;display:flex;align-items:flex-start;gap:8px}
+#disclaimer p{font-size:11px;color:#92400e;line-height:1.6}
+#header{background:#fff;border-bottom:2px solid #f1f5f9;position:sticky;top:0;z-index:50;box-shadow:0 1px 12px rgba(0,0,0,0.06)}
+#hinner{max-width:1060px;margin:0 auto;padding:0 18px}
+#htop{display:flex;align-items:center;justify-content:space-between;padding:12px 0;flex-wrap:wrap;gap:12px}
+#logo{display:flex;align-items:center;gap:10px}
+#logo-icon{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#16a34a,#15803d);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(22,163,74,0.3);font-size:20px}
+#logo-name{font-size:20px;font-weight:800;letter-spacing:-.5px}
+#logo-sub{font-size:10px;color:#94a3b8;font-weight:500;letter-spacing:.5px}
+#controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.sel{background:#fff;border:2px solid #e2e8f0;border-radius:10px;padding:8px 12px;font-size:13px;font-weight:500;color:#1e293b;outline:none;cursor:pointer;font-family:inherit}
+.sel:focus{border-color:#16a34a}
+#lang-btn{background:#f1f5f9;border:2px solid #e2e8f0;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;color:#1e293b}
+#lang-btn:hover{border-color:#16a34a;background:#f0fdf4;color:#16a34a}
+#tabs{display:flex;align-items:center;justify-content:space-between;border-top:2px solid #f1f5f9}
+.tbtn{background:none;border:none;cursor:pointer;font-size:13px;font-weight:600;padding:12px 18px;color:#94a3b8;position:relative;transition:color .2s;font-family:inherit;white-space:nowrap}
+.tbtn.on{color:#1e293b}
+.tbtn.on::after{content:'';position:absolute;bottom:0;left:18px;right:18px;height:3px;background:#16a34a;border-radius:2px 2px 0 0}
+.tbtn:hover:not(.on){color:#475569}
+#swrap{position:relative;display:flex;align-items:center}
+#swrap svg{position:absolute;left:10px}
+#search{background:#fff;border:2px solid #e2e8f0;border-radius:10px;padding:9px 14px 9px 32px;font-size:13px;color:#1e293b;outline:none;width:200px;font-family:inherit}
+#search:focus{border-color:#16a34a}
+#search::placeholder{color:#94a3b8}
+#main{max-width:1060px;margin:0 auto;padding:20px 18px 40px}
+.panel{display:none}.panel.on{display:block}
+#cpills{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
+.cpill{border:2px solid;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:inherit}
+#sbadge{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding:10px 16px;background:#fff;border-radius:10px;border:2px solid #f1f5f9;flex-wrap:wrap;font-size:12px;width:fit-content}
+.sdot{width:8px;height:8px;border-radius:50%;background:#16a34a;flex-shrink:0}
+#pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+.pcard{background:#fff;border-radius:16px;border:2px solid #f1f5f9;overflow:hidden;transition:all .2s}
+.pcard:hover{border-color:#86efac;box-shadow:0 4px 20px rgba(22,163,74,0.1);transform:translateY(-2px)}
+.pbar{height:5px}
+.pbody{padding:14px 14px 12px}
+.phead{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.picon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.pname{font-size:13px;font-weight:700;line-height:1.3}
+.pbrand{font-size:11px;color:#94a3b8;margin-top:1px}
+.vbadge{border-radius:6px;padding:3px 8px;font-size:10px;font-weight:700;flex-shrink:0}
+.p2grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.pbox{border-radius:10px;padding:10px 12px;border:2px solid transparent}
+.plabel{font-size:9px;font-weight:600;letter-spacing:1px;margin-bottom:2px}
+.pval{font-size:20px;font-weight:800}
+.pbrlbl{font-size:9px;margin-top:1px}
+.savebar{background:#f0fdf4;border-radius:8px;padding:6px 10px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.savebar span{font-size:11px;color:#16a34a;font-weight:700}
+.savepct{background:#dcfce7;border-radius:20px;padding:1px 8px;font-size:11px;color:#16a34a;font-weight:700}
+.pnote{font-size:11px;color:#64748b;line-height:1.6;margin-bottom:10px}
+.ntoggle{width:100%;background:#f8fafc;border:2px solid #f1f5f9;border-radius:8px;padding:7px 10px;font-size:11px;color:#64748b;cursor:pointer;text-align:left;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-family:inherit;margin-bottom:6px}
+.ntable{background:#f8fafc;border-radius:8px;padding:10px 12px;border:2px solid #f1f5f9;display:none;margin-bottom:8px}
+.ntable table{width:100%;border-collapse:collapse;font-size:11px}
+.ntable th{text-align:left;color:#94a3b8;font-weight:600;padding-bottom:5px;font-size:10px}
+.ntable td{padding:4px 0;border-top:1px solid #f1f5f9}
+.brow{display:flex;gap:7px;margin-top:6px}
+.ab{border:2px solid transparent;border-radius:10px;padding:9px 14px;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit}
+.ab:hover{transform:translateY(-1px)}
+.abgr{background:#f8fafc;color:#64748b;border-color:#e2e8f0;flex:1}
+.abr{background:#fef2f2;color:#dc2626;border-color:#fecaca;padding:9px 10px}
+#csum{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;display:none}
+.scard{background:#fff;border-radius:14px;border:2px solid #f1f5f9;padding:16px 18px}
+.sclabel{font-size:11px;color:#94a3b8;font-weight:600;margin-bottom:5px}
+.scval{font-size:24px;font-weight:800;letter-spacing:-.5px}
+.scsub{font-size:11px;color:#94a3b8;margin-top:3px}
+#citems{display:flex;flex-direction:column;gap:8px}
+.citem{background:#fff;border-radius:12px;border:2px solid #f1f5f9;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.cileft{display:flex;align-items:center;gap:10px}
+.ciicon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.ciname{font-size:13px;font-weight:700}
+.citype{font-size:11px;margin-top:1px;font-weight:600}
+.ciright{display:flex;align-items:center;gap:12px}
+.ciprice{font-size:18px;font-weight:800}
+.cisave{font-size:11px;color:#16a34a;font-weight:600}
+.empty{text-align:center;padding:70px 0}
+.emptyicon{width:80px;height:80px;border-radius:24px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:36px}
+.delbtn{background:#fef2f2;color:#dc2626;border:2px solid #fecaca;border-radius:8px;width:30px;height:30px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+#cgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.ccard{background:#fff;border-radius:16px;border:2px solid #f1f5f9;padding:20px}
+.ctitle{font-size:15px;font-weight:700;margin-bottom:4px}
+.csub{font-size:11px;color:#94a3b8;margin-bottom:16px}
+.clabel{font-size:11px;color:#64748b;font-weight:600;margin-bottom:5px;display:block}
+.cinput{background:#f8fafc;border:2px solid #f1f5f9;border-radius:8px;padding:7px 10px;font-size:13px;color:#1e293b;outline:none;font-family:inherit;width:100%;transition:border-color .2s}
+.cinput:focus{border-color:#16a34a}
+.irow{display:grid;grid-template-columns:1fr 90px 50px 32px;gap:7px;align-items:center;margin-bottom:8px}
+.addbtn{width:100%;background:#f8fafc;border:2px dashed #e2e8f0;border-radius:10px;padding:9px;font-size:12px;color:#94a3b8;cursor:pointer;font-weight:600;font-family:inherit;margin-top:4px;transition:all .15s}
+.addbtn:hover{border-color:#16a34a;color:#16a34a}
+.tipbtns,.dtypebtns{display:flex;gap:6px;flex-wrap:wrap}
+.tipbtn,.dtypebtn{background:#f8fafc;color:#64748b;border:2px solid #f1f5f9;border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer;font-weight:700;font-family:inherit;transition:all .15s}
+.tipbtn.on,.dtypebtn.on{background:#16a34a;color:#fff;border-color:#16a34a}
+.srow{display:flex;justify-content:space-between;padding:5px 0;font-size:13px}
+.stotal{border-top:3px solid #f1f5f9;margin-top:8px;padding-top:12px}
+.bbar{height:8px;background:#f1f5f9;border-radius:4px;overflow:hidden;margin-top:10px;display:none}
+.bfill{height:100%;border-radius:4px;transition:width .4s}
+.alert{border-radius:8px;padding:6px 10px;margin-top:6px;font-size:11px;font-weight:600}
+.alertr{background:#fef2f2;color:#dc2626}
+.alertg{background:#f0fdf4;color:#16a34a}
+.imported{background:#f0fdf4;border-radius:10px;padding:8px 12px;margin-bottom:12px;font-size:11px;color:#16a34a;font-weight:600;display:none}
+#footer{border-top:2px solid #f1f5f9;background:#fff;padding:20px 18px}
+#finner{max-width:1060px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+#donbox{background:linear-gradient(135deg,#f0fdf4,#ecfdf5);border:2px solid #bbf7d0;border-radius:14px;padding:20px 24px;display:flex;flex-direction:column;gap:10px}
+#dontitle{font-size:15px;font-weight:700;color:#15803d}
+#dontext{font-size:13px;color:#16a34a;line-height:1.7}
+#donbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.dbtn{display:inline-flex;align-items:center;gap:6px;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:700;text-decoration:none;transition:opacity .15s}
+.dbtn:hover{opacity:.85}
+.kofi{background:#ff5e5b;color:#fff}
+.bmac{background:#ffdd00;color:#000}
+#fdis{display:flex;align-items:flex-start;gap:8px}
+#fdis p{font-size:11px;color:#94a3b8;line-height:1.7}
+@media(max-width:680px){
+  #cgrid,#csum{grid-template-columns:1fr}
+  #controls{gap:5px}
+  #search{width:130px}
+  .irow{grid-template-columns:1fr 75px 44px 30px}
+}
+</style>
+</head>
+<body>
+
+<div id="disclaimer">
+  <span style="font-size:16px;flex-shrink:0">⚠️</span>
+  <p id="disclaimer-text"><strong>Aviso legal:</strong> Mr. Shopper es una herramienta de comparación independiente. Todas las marcas mencionadas son propiedad de sus respectivos dueños. No existe afiliación, patrocinio ni relación comercial con ninguna marca o tienda. Los precios son estimados de referencia y pueden variar.</p>
+</div>
+
+<div id="header">
+  <div id="hinner">
+    <div id="htop">
+      <div id="logo">
+        <div id="logo-icon">🛒</div>
+        <div>
+          <div id="logo-name">Mr. Shopper</div>
+          <div id="logo-sub">COMPARE · SAVE · DECIDE BETTER</div>
+        </div>
+      </div>
+      <div id="controls">
+        <select class="sel" id="csel" onchange="onCountry()"></select>
+        <select class="sel" id="ssel" onchange="onStore()"></select>
+        <button id="lang-btn" onclick="toggleLang()">🌐 ES</button>
+      </div>
+    </div>
+    <div id="tabs">
+      <div style="display:flex">
+        <button class="tbtn on" id="tab-comparar" onclick="setTab('comparar',this)">🛒 Compare</button>
+        <button class="tbtn" id="tab-lista" onclick="setTab('lista',this)">My list</button>
+        <button class="tbtn" id="tab-calc" onclick="setTab('calc',this)">Calculator</button>
+      </div>
+      <div id="swrap">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="search" placeholder="Search product..." oninput="renderProducts()"/>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="main">
+
+  <div id="panel-comparar" class="panel on">
+    <div id="cpills"></div>
+    <div id="sbadge">
+      <div class="sdot"></div>
+      <strong id="sname"></strong>
+      <span style="color:#94a3b8">·</span>
+      <span style="color:#64748b" id="generic-label">Generic: <strong id="sgeneric" style="color:#16a34a"></strong></span>
+      <span id="pcount" style="font-size:11px;color:#cbd5e1;margin-left:8px"></span>
+    </div>
+    <div id="pgrid"></div>
+  </div>
+
+  <div id="panel-lista" class="panel">
+    <div id="csum">
+      <div class="scard">
+        <div class="sclabel" id="lbl-mylist">MY LIST</div>
+        <div class="scval" id="sv-t" style="color:#1e293b"></div>
+        <div class="scsub" id="sv-cur"></div>
+      </div>
+      <div class="scard">
+        <div class="sclabel" id="lbl-allbrand">IF ALL BRAND</div>
+        <div class="scval" id="sv-tb" style="color:#64748b"></div>
+        <div class="scsub" id="sv-cur2"></div>
+      </div>
+      <div class="scard" style="background:#f0fdf4;border-color:#86efac">
+        <div class="sclabel" id="lbl-saved">💰 TOTAL SAVED</div>
+        <div class="scval" id="sv-saved" style="color:#16a34a"></div>
+        <div class="scsub" id="sv-pct"></div>
+      </div>
+    </div>
+    <div class="empty" id="cempty">
+      <div class="emptyicon">🛒</div>
+      <div id="empty-title" style="font-size:17px;color:#475569;font-weight:700">Your list is empty</div>
+      <div id="empty-sub" style="font-size:13px;color:#94a3b8;margin-top:6px">Add products from the Compare tab</div>
+    </div>
+    <div id="citems"></div>
+  </div>
+
+  <div id="panel-calc" class="panel">
+    <div id="cgrid">
+      <div class="ccard">
+        <div class="ctitle" id="calc-title">🛍️ Products</div>
+        <div class="csub" id="calc-sub">Add the products you plan to buy</div>
+        <div class="imported" id="cimported"></div>
+        <div id="crows"></div>
+        <button class="addbtn" id="add-row-btn" onclick="addRow()">+ Add product</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="ccard">
+          <div class="ctitle" id="config-title" style="margin-bottom:16px">⚙️ Configuration</div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div id="statewrap" style="display:none">
+              <label class="clabel" id="state-label">State / Region</label>
+              <select class="cinput" id="statesel" onchange="onState()"></select>
+            </div>
+            <div>
+              <label class="clabel" id="taxlbl">VAT / Tax</label>
+              <div style="display:flex;align-items:center;gap:8px">
+                <input type="number" class="cinput" id="taxinput" style="width:80px" oninput="calcUpdate()"/>
+                <span style="font-size:13px;color:#64748b;font-weight:600">%</span>
+                <button id="reset-btn" onclick="resetTax()" style="background:#f1f5f9;border:none;border-radius:7px;padding:6px 12px;font-size:11px;color:#64748b;cursor:pointer;font-family:inherit;font-weight:600">Reset</button>
+              </div>
+            </div>
+            <div id="tipwrap" style="display:none">
+              <label class="clabel" id="tip-label">Tip</label>
+              <div class="tipbtns">
+                <button class="tipbtn on" id="tip-none" onclick="setTip(0,this)">No tip</button>
+                <button class="tipbtn" onclick="setTip(10,this)">10%</button>
+                <button class="tipbtn" onclick="setTip(15,this)">15%</button>
+                <button class="tipbtn" onclick="setTip(18,this)">18%</button>
+                <button class="tipbtn" onclick="setTip(20,this)">20%</button>
+              </div>
+            </div>
+            <div>
+              <label class="clabel" id="disc-label">Discount or coupon</label>
+              <div style="display:flex;gap:7px;align-items:center">
+                <input type="number" class="cinput" id="discinput" placeholder="0" style="width:80px" oninput="calcUpdate()"/>
+                <div class="dtypebtns">
+                  <button class="dtypebtn on" onclick="setDiscType('pct',this)">%</button>
+                  <button class="dtypebtn" id="discsym" onclick="setDiscType('fixed',this)">$</button>
+                </div>
+              </div>
+            </div>
+            <div>
+              <label class="clabel" id="budget-label">My budget (optional)</label>
+              <input type="number" class="cinput" id="budgetinput" oninput="calcUpdate()"/>
+              <div id="budgetalert"></div>
+            </div>
+          </div>
+        </div>
+        <div class="ccard">
+          <div class="ctitle" id="summary-title" style="margin-bottom:12px">📊 Summary</div>
+          <div class="srow"><span style="color:#64748b" id="lbl-subtotal">Subtotal</span><span id="c-sub" style="font-weight:600"></span></div>
+          <div class="srow" id="c-drow" style="display:none"><span style="color:#16a34a" id="c-dlabel">Discount</span><span id="c-dval" style="font-weight:600;color:#16a34a"></span></div>
+          <div class="srow" id="c-arow" style="display:none"><span style="color:#64748b" id="lbl-after">After discount</span><span id="c-aval" style="font-weight:600"></span></div>
+          <div class="srow"><span style="color:#64748b" id="c-taxlbl">Tax</span><span id="c-taxval" style="font-weight:600"></span></div>
+          <div class="srow" id="c-tiprow" style="display:none"><span style="color:#64748b" id="c-tiplbl">Tip</span><span id="c-tipval" style="font-weight:600"></span></div>
+          <div class="srow stotal">
+            <span id="lbl-total" style="font-size:16px;font-weight:800">Total</span>
+            <div style="text-align:right">
+              <div id="c-total" style="font-size:28px;font-weight:800;color:#16a34a;letter-spacing:-.5px"></div>
+              <div id="c-cur" style="font-size:11px;color:#94a3b8"></div>
+            </div>
+          </div>
+          <div class="bbar" id="bbar"><div class="bfill" id="bfill"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div id="footer">
+  <div id="finner">
+    <div id="donbox">
+      <div id="dontitle">☕ Was Mr. Shopper helpful?</div>
+      <div id="dontext">
+        This tool is completely <strong>free</strong> and always will be.<br>
+        If it helped you save money, consider supporting me with a voluntary donation.<br>
+        Your support helps keep this website free and keep improving it. 🙏
+      </div>
+      <div id="donbtns">
+        <a href="https://ko-fi.com/silvertounge" target="_blank" class="dbtn kofi">☕ Support on Ko-fi</a>
+        <a href="https://buymeacoffee.com/silvertounge" target="_blank" class="dbtn bmac">☕ Buy Me a Coffee</a>
+      </div>
+    </div>
+    <div id="fdis">
+      <span style="font-size:14px;flex-shrink:0">⚠️</span>
+      <p id="fdis-text"><strong style="color:#64748b">Legal notice:</strong> Mr. Shopper is an independent comparison tool. All brands mentioned are the property of their respective owners. There is no affiliation, sponsorship or commercial relationship with any brand or store. Prices are reference estimates and may vary. Always check real product labels.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// LANG: es=Spanish, en=English, pt=Portuguese, fr=French
+const LANGS=["es","en","pt","fr"];
+const LN={"es":"🇪🇸 ES","en":"🇺🇸 EN","pt":"🇧🇷 PT","fr":"🇫🇷 FR"};
+const T={
+es:{sub:"Compara precios y ahorra",tab1:"🛒 Comparar",tab2:"Mi lista",tab3:"Calculadora",search:"Buscar producto...",gen:"Genérico",marca:"MARCA",generico:"GENÉRICO",saves:"💰 Ahorras ",less:"% menos",nut:"📊 Tabla nutricional",addGen:"+ Genérico",addBr:"+ Marca",vd:["✓ Idéntico","~ Similar","≠ Diferente"],nut_k:["Calorías","Proteína","Carbos","Grasas","Azúcares","Sodio"],mylist:"Mi lista",allbrand:"Si fuera todo marca",saved:"💰 Total ahorrado",lessall:"% menos que todo de marca",empty1:"Tu lista está vacía",empty2:"Agrega productos desde Comparar",prods:"productos",calctit:"🛍️ Productos",calcsub:"Agrega los productos que piensas comprar",imported:"✓ Se importaron {n} productos",addrow:"+ Agregar producto",conftit:"⚙️ Configuración",statelbl:"Estado / Región",reset:"Restablecer",tiplbl:"Propina",tipnone:"Sin propina",disclbl:"Descuento o cupón",budlbl:"Mi presupuesto",budph:"¿Cuánto tienes para gastar?",sumtit:"📊 Resumen",subtotal:"Subtotal",afterdisc:"Después del descuento",total:"Total",over:"⚠️ Te pasas por {s}{a}",under:"✓ Te sobran {s}{a}",dontit:"☕ ¿Te fue útil Mr. Shopper?",dontxt:"Esta herramienta es completamente <strong>gratuita</strong> y siempre lo será.<br>Si te ayudó a ahorrar, considera apoyarme con una donación voluntaria. 🙏",donk:"☕ Apóyame en Ko-fi",donb:"☕ Buy Me a Coffee",dis:"<strong>Aviso legal:</strong> Mr. Shopper es una herramienta de comparación independiente. Todas las marcas son propiedad de sus dueños. Sin afiliación ni relación comercial. Precios de referencia."},
+en:{sub:"Compare prices and save",tab1:"🛒 Compare",tab2:"My list",tab3:"Calculator",search:"Search product...",gen:"Generic",marca:"BRAND",generico:"GENERIC",saves:"💰 Save ",less:"% less",nut:"📊 Nutrition table",addGen:"+ Generic",addBr:"+ Brand",vd:["✓ Identical","~ Similar","≠ Different"],nut_k:["Calories","Protein","Carbs","Fat","Sugars","Sodium"],mylist:"My list",allbrand:"If all brand",saved:"💰 Total saved",lessall:"% less than all brand",empty1:"Your list is empty",empty2:"Add products from Compare tab",prods:"products",calctit:"🛍️ Products",calcsub:"Add the products you plan to buy",imported:"✓ {n} products imported",addrow:"+ Add product",conftit:"⚙️ Configuration",statelbl:"State / Region",reset:"Reset",tiplbl:"Tip",tipnone:"No tip",disclbl:"Discount or coupon",budlbl:"My budget",budph:"How much do you have to spend?",sumtit:"📊 Summary",subtotal:"Subtotal",afterdisc:"After discount",total:"Total",over:"⚠️ Over budget by {s}{a}",under:"✓ {s}{a} left in budget",dontit:"☕ Was Mr. Shopper helpful?",dontxt:"This tool is completely <strong>free</strong> and always will be.<br>If it helped you save money, consider supporting me with a voluntary donation. 🙏",donk:"☕ Support on Ko-fi",donb:"☕ Buy Me a Coffee",dis:"<strong>Legal notice:</strong> Mr. Shopper is an independent comparison tool. All brands are property of their owners. No affiliation or commercial relationship. Reference prices only."},
+pt:{sub:"Compare preços e economize",tab1:"🛒 Comparar",tab2:"Minha lista",tab3:"Calculadora",search:"Buscar produto...",gen:"Genérico",marca:"MARCA",generico:"GENÉRICO",saves:"💰 Economiza ",less:"% menos",nut:"📊 Tabela nutricional",addGen:"+ Genérico",addBr:"+ Marca",vd:["✓ Idêntico","~ Similar","≠ Diferente"],nut_k:["Calorias","Proteína","Carbos","Gorduras","Açúcares","Sódio"],mylist:"Minha lista",allbrand:"Se tudo fosse marca",saved:"💰 Total economizado",lessall:"% menos que tudo de marca",empty1:"Sua lista está vazia",empty2:"Adicione produtos na aba Comparar",prods:"produtos",calctit:"🛍️ Produtos",calcsub:"Adicione os produtos que planeja comprar",imported:"✓ {n} produtos importados",addrow:"+ Adicionar produto",conftit:"⚙️ Configuração",statelbl:"Estado / Região",reset:"Redefinir",tiplbl:"Gorjeta",tipnone:"Sem gorjeta",disclbl:"Desconto ou cupom",budlbl:"Meu orçamento",budph:"Quanto você tem para gastar?",sumtit:"📊 Resumo",subtotal:"Subtotal",afterdisc:"Após o desconto",total:"Total",over:"⚠️ Acima do orçamento em {s}{a}",under:"✓ Sobram {s}{a} no orçamento",dontit:"☕ Mr. Shopper foi útil?",dontxt:"Esta ferramenta é completamente <strong>gratuita</strong> e sempre será.<br>Se te ajudou a economizar, considere me apoiar com uma doação voluntária. 🙏",donk:"☕ Apoie no Ko-fi",donb:"☕ Buy Me a Coffee",dis:"<strong>Aviso legal:</strong> Mr. Shopper é uma ferramenta de comparação independente. Todas as marcas pertencem aos seus respectivos donos. Sem afiliação ou relação comercial. Preços de referência."},
+fr:{sub:"Comparez les prix et économisez",tab1:"🛒 Comparer",tab2:"Ma liste",tab3:"Calculatrice",search:"Rechercher un produit...",gen:"Générique",marca:"MARQUE",generico:"GÉNÉRIQUE",saves:"💰 Vous économisez ",less:"% moins",nut:"📊 Tableau nutritionnel",addGen:"+ Générique",addBr:"+ Marque",vd:["✓ Identique","~ Similaire","≠ Différent"],nut_k:["Calories","Protéines","Glucides","Graisses","Sucres","Sodium"],mylist:"Ma liste",allbrand:"Si tout était de marque",saved:"💰 Total économisé",lessall:"% moins que tout de marque",empty1:"Votre liste est vide",empty2:"Ajoutez des produits depuis Comparer",prods:"produits",calctit:"🛍️ Produits",calcsub:"Ajoutez les produits que vous prévoyez d'acheter",imported:"✓ {n} produits importés",addrow:"+ Ajouter un produit",conftit:"⚙️ Configuration",statelbl:"État / Région",reset:"Réinitialiser",tiplbl:"Pourboire",tipnone:"Sans pourboire",disclbl:"Remise ou coupon",budlbl:"Mon budget",budph:"Combien avez-vous à dépenser?",sumtit:"📊 Résumé",subtotal:"Sous-total",afterdisc:"Après remise",total:"Total",over:"⚠️ Dépassement de {s}{a}",under:"✓ Il reste {s}{a} dans le budget",dontit:"☕ Mr. Shopper vous a été utile?",dontxt:"Cet outil est complètement <strong>gratuit</strong> et le sera toujours.<br>S'il vous a aidé à économiser, envisagez de me soutenir avec un don volontaire. 🙏",donk:"☕ Soutenir sur Ko-fi",donb:"☕ Buy Me a Coffee",dis:"<strong>Avis légal:</strong> Mr. Shopper est un outil de comparaison indépendant. Toutes les marques appartiennent à leurs propriétaires. Sans affiliation ni relation commerciale. Prix indicatifs."},
+};
+
+// Product names per language [es, en, pt, fr]
+const PN={
+lec:["Leche entera 1L","Whole milk 1L","Leite integral 1L","Lait entier 1L"],
+lec2:["Leche descremada 1L","Skim milk 1L","Leite desnatado 1L","Lait écrémé 1L"],
+man:["Mantequilla 200g","Butter 200g","Manteiga 200g","Beurre 200g"],
+que:["Queso amarillo rebanado","Sliced yellow cheese","Queijo fatiado","Fromage tranché"],
+yog:["Yogurt natural 1kg","Plain yogurt 1kg","Iogurte natural 1kg","Yaourt nature 1kg"],
+cre:["Crema ácida 200g","Sour cream 200g","Creme azedo 200g","Crème fraîche 200g"],
+qpa:["Queso panela 400g","Panela cheese 400g","Queijo fresco 400g","Fromage frais 400g"],
+hue:["Huevos blancos 12pz","White eggs 12pc","Ovos brancos 12un","Oeufs blancs 12pc"],
+jamo:["Jamón de pavo 200g","Turkey ham 200g","Presunto de peru 200g","Jambon dinde 200g"],
+sal:["Salchichas 400g","Hot dogs 400g","Salsichas 400g","Saucisses 400g"],
+atu:["Atún en agua 140g","Tuna in water 140g","Atum em água 140g","Thon en eau 140g"],
+sar:["Sardinas en tomate 125g","Sardines in tomato 125g","Sardinhas no tomate 125g","Sardines tomate 125g"],
+arr:["Arroz blanco 1kg","White rice 1kg","Arroz branco 1kg","Riz blanc 1kg"],
+pas:["Pasta spaghetti 500g","Spaghetti 500g","Macarrão spaghetti 500g","Spaghetti 500g"],
+avi:["Avena hojuelas 500g","Rolled oats 500g","Aveia em flocos 500g","Flocons d'avoine 500g"],
+len:["Lentejas 500g","Lentils 500g","Lentilhas 500g","Lentilles 500g"],
+fri:["Frijoles negros 400g","Black beans 400g","Feijão preto 400g","Haricots noirs 400g"],
+gar:["Garbanzos 400g","Chickpeas 400g","Grão de bico 400g","Pois chiches 400g"],
+tor:["Tortillas maíz 30pz","Corn tortillas 30pc","Tortilhas de milho 30un","Tortillas maïs 30pc"],
+tom:["Salsa de tomate 400g","Tomato sauce 400g","Molho de tomate 400g","Sauce tomate 400g"],
+pur:["Puré de tomate 400g","Tomato puree 400g","Purê de tomate 400g","Purée de tomate 400g"],
+chi:["Chiles chipotles 220g","Chipotle peppers 220g","Pimentas chipotle 220g","Piments chipotle 220g"],
+elote:["Elote en grano 400g","Corn kernels 400g","Milho em grão 400g","Maïs en grains 400g"],
+ace:["Aceite vegetal 1L","Vegetable oil 1L","Óleo vegetal 1L","Huile végétale 1L"],
+ace2:["Aceite de oliva 500ml","Olive oil 500ml","Azeite de oliva 500ml","Huile d'olive 500ml"],
+saz:["Sal de mesa 1kg","Table salt 1kg","Sal de mesa 1kg","Sel de table 1kg"],
+azu:["Azúcar blanca 1kg","White sugar 1kg","Açúcar branco 1kg","Sucre blanc 1kg"],
+cals:["Caldo pollo 8 sobres","Chicken broth 8pk","Caldo de frango 8un","Bouillon poulet 8pc"],
+may:["Mayonesa 400g","Mayonnaise 400g","Maionese 400g","Mayonnaise 400g"],
+ket:["Catsup 400g","Ketchup 400g","Ketchup 400g","Ketchup 400g"],
+mos:["Mostaza 300g","Mustard 300g","Mostarda 300g","Moutarde 300g"],
+pan:["Pan de caja blanco","White bread","Pão de forma branco","Pain de mie blanc"],
+pan2:["Pan integral","Whole grain bread","Pão integral","Pain complet"],
+gal:["Galletas de avena","Oat cookies","Biscoitos de aveia","Biscuits avoine"],
+gal2:["Galletas saladas","Crackers","Biscoitos salgados","Crackers salés"],
+caf:["Café molido 250g","Ground coffee 250g","Café moído 250g","Café moulu 250g"],
+agu:["Agua embotellada 1.5L","Bottled water 1.5L","Água mineral 1.5L","Eau en bouteille 1.5L"],
+jug:["Jugo de naranja 1L","Orange juice 1L","Suco de laranja 1L","Jus d'orange 1L"],
+te:["Té negro 25 sobres","Black tea 25pk","Chá preto 25un","Thé noir 25pc"],
+ref:["Refresco cola 2L","Cola soda 2L","Refrigerante cola 2L","Soda cola 2L"],
+pap:["Papas fritas 150g","Potato chips 150g","Salgadinho 150g","Chips pommes 150g"],
+pop:["Palomitas microondas 3pz","Microwave popcorn 3pk","Pipoca micro-ondas 3un","Pop-corn micro 3pc"],
+cho:["Chocolate oscuro 100g","Dark chocolate 100g","Chocolate amargo 100g","Chocolat noir 100g"],
+nut:["Nuez mixta 200g","Mixed nuts 200g","Mix de nozes 200g","Noix mélangées 200g"],
+det:["Detergente líquido 1L","Liquid detergent 1L","Detergente líquido 1L","Lessive liquide 1L"],
+lim:["Limpiador multiusos 1L","All-purpose cleaner 1L","Limpador multiuso 1L","Nettoyant multi 1L"],
+clo:["Cloro 1L","Bleach 1L","Água sanitária 1L","Eau de javel 1L"],
+pap2:["Papel higiénico 4 rollos","Toilet paper 4 rolls","Papel higiênico 4 rolos","Papier toilette 4 rouleaux"],
+pap3:["Papel de cocina 2 rollos","Paper towels 2 rolls","Papel toalha 2 rolos","Essuie-tout 2 rouleaux"],
+sha:["Shampoo 400ml","Shampoo 400ml","Shampoo 400ml","Shampooing 400ml"],
+jab2:["Jabón de barra 3pz","Bar soap 3pk","Sabonete 3un","Savon en barre 3pc"],
+gel:["Gel antibacterial 500ml","Hand sanitizer 500ml","Álcool gel 500ml","Gel antibactérien 500ml"],
+pana:["Pañales talla M 40pz","Diapers size M 40pk","Fraldas tam M 40un","Couches taille M 40pc"],
+toll:["Toallitas húmedas 80pz","Baby wipes 80pk","Lenços umedecidos 80un","Lingettes bébé 80pc"],
+pca:["Croquetas perro 2kg","Dog food 2kg","Ração cachorro 2kg","Croquettes chien 2kg"],
+pga:["Croquetas gato 2kg","Cat food 2kg","Ração gato 2kg","Croquettes chat 2kg"],
+pars:["Paracetamol 500mg 20pz","Paracetamol 500mg 20pc","Paracetamol 500mg 20un","Paracétamol 500mg 20cp"],
+ibu:["Ibuprofeno 400mg 20pz","Ibuprofen 400mg 20pc","Ibuprofeno 400mg 20un","Ibuprofène 400mg 20cp"],
+vit:["Vitamina C 1000mg 30pz","Vitamin C 1000mg 30pc","Vitamina C 1000mg 30un","Vitamine C 1000mg 30cp"],
+cur:["Curitas 40pz","Band-aids 40pk","Curativo 40un","Pansements 40pc"],
+hel:["Helado vainilla 1L","Vanilla ice cream 1L","Sorvete baunilha 1L","Glace vanille 1L"],
+veg:["Verduras mixtas 500g","Mixed vegetables 500g","Legumes mistos 500g","Légumes mélangés 500g"],
+ore:["Orégano 30g","Oregano 30g","Orégano 30g","Origan 30g"],
+pimi:["Pimienta negra 30g","Black pepper 30g","Pimenta preta 30g","Poivre noir 30g"],
+cane:["Canela molida 30g","Ground cinnamon 30g","Canela moída 30g","Cannelle moulue 30g"],
+};
+
+const NOTE={
+es:{"lec":"Composición idéntica. Mejor ahorro del súper.","lec2":"Mismo proceso, misma reducción de grasa.","man":"Para cocinar igual; para untar nota la diferencia.","que":"Similar en fusión. Textura varía un poco.","yog":"Menos cultivos declarados pero funcional.","cre":"Idéntica en composición.","qpa":"Ahorra sin dudar.","hue":"Un huevo es un huevo. Idéntico.","jamo":"Similar en sabor y textura.","sal":"Para caldos igual. Para hotdog nota diferencia.","atu":"Puede tener más agua y menos trozo sólido.","sar":"Diferencia mínima.","arr":"Arroz es arroz. Mejor cambio del súper.","pas":"Para salsas espesas imperceptible.","avi":"Avena es avena.","len":"Legumbre sin procesar. Idéntica.","fri":"Ahorra aquí siempre.","gar":"Legumbre enlatada idéntica.","tor":"Misma masa nixtamalizada.","tom":"Para cocinar idéntica.","pur":"Idéntico en cocina.","chi":"Puede ser menos ahumado.","elote":"Maíz dulce idéntico.","ace":"Cambia sin dudar.","ace2":"Revisa etiqueta: puede mezclarse.","saz":"Sin diferencia posible.","azu":"Sacarosa pura. Idéntica.","cals":"Menos glutamato y sabor concentrado.","may":"Menos huevo real, más almidón.","ket":"Para cocinar el genérico funciona.","mos":"Mostaza amarilla idéntica.","pan":"Se endurece más rápido.","pan2":"Puede tener menos fibra real.","gal":"Para botanear igual.","gal2":"El genérico es menos crujiente.","caf":"Aquí la marca sí importa.","agu":"Mismos estándares. Ahorra siempre.","jug":"Genérico tiene más azúcar añadida.","te":"Hojas de té. Proceso idéntico.","ref":"Fórmulas únicas y patentadas.","pap":"Menos sazón pero sirve.","pop":"Menos mantequilla real.","cho":"Menos cacao real.","nut":"Sin procesar = sin diferencia.","det":"Menos enzimas. No cambies para manchas fuertes.","lim":"Para superficies idéntico.","clo":"Hipoclorito de sodio. Idéntico.","pap2":"Más delgado y áspero.","pap3":"Absorbe menos por hoja.","sha":"Limpia igual, menos acondicionadores.","jab2":"Para limpieza básica idéntico.","gel":"Alcohol 70%. Idéntico.","pana":"Puede filtrar más con mucha carga.","toll":"Paño húmedo neutro. Idéntico.","pca":"Menor porcentaje de proteína.","pga":"El porcentaje de proteína importa.","pars":"Mismo principio activo por ley.","ibu":"Mismo principio activo por ley.","vit":"Ácido ascórbico. Idéntico.","cur":"Funciona igual.","hel":"Más aire y menos crema real.","veg":"Verdura congelada idéntica.","ore":"Hierba seca. Sin diferencia.","pimi":"Especia básica. Idéntica.","cane":"Especia básica. Idéntica."},
+en:{"lec":"Identical composition. Best supermarket saving.","lec2":"Same process, same fat reduction.","man":"Equal for cooking; difference noticeable when spreading.","que":"Similar when melted. Texture varies slightly.","yog":"Fewer declared cultures but functional.","cre":"Identical in composition.","qpa":"Save without hesitation.","hue":"An egg is an egg. Identical.","jamo":"Similar in taste and texture.","sal":"Equal for soups. Difference noticeable for hot dogs.","atu":"May have more water and less solid piece.","sar":"Minimal difference.","arr":"Rice is rice. Best supermarket swap.","pas":"Imperceptible for thick sauces.","avi":"Oats are oats.","len":"Unprocessed legume. Identical.","fri":"Always save here.","gar":"Canned legume. Identical.","tor":"Same nixtamalized dough.","tom":"Identical for cooking.","pur":"Identical in kitchen.","chi":"May be less smoky.","elote":"Sweet corn. Identical.","ace":"Swap without hesitation.","ace2":"Check label: may be blended.","saz":"No possible difference.","azu":"Pure sucrose. Identical.","cals":"Less glutamate and concentrated flavor.","may":"Less real egg, more starch.","ket":"Generic works for cooking.","mos":"Basic yellow mustard. Identical.","pan":"Goes stale faster.","pan2":"May have less real fiber.","gal":"Equal for snacking.","gal2":"Generic is less crispy.","caf":"Brand matters here.","agu":"Same standards. Always save.","jug":"Generic has more added sugar.","te":"Tea leaves. Identical process.","ref":"Unique patented formulas.","pap":"Less seasoning but works.","pop":"Less real butter.","cho":"Less real cocoa.","nut":"Unprocessed = no difference.","det":"Fewer enzymes. Don't switch for tough stains.","lim":"Identical for surfaces.","clo":"Sodium hypochlorite. Identical.","pap2":"Thinner and rougher.","pap3":"Absorbs less per sheet.","sha":"Cleans equally, fewer conditioners.","jab2":"Identical for basic cleaning.","gel":"70% alcohol. Identical.","pana":"May leak more with heavy load.","toll":"Neutral wet cloth. Identical.","pca":"Lower real protein percentage.","pga":"Protein percentage matters.","pars":"Same active ingredient by law.","ibu":"Same active ingredient by law.","vit":"Ascorbic acid. Identical.","cur":"Works the same.","hel":"More air and less real cream.","veg":"Frozen vegetable. Identical.","ore":"Dry herb. No difference.","pimi":"Basic spice. Identical.","cane":"Basic spice. Identical."},
+pt:{"lec":"Composição idêntica. Melhor economia.","lec2":"Mesmo processo, mesma redução de gordura.","man":"Igual para cozinhar; diferença ao passar no pão.","que":"Similar ao derreter. Textura varia um pouco.","yog":"Menos culturas declaradas mas funcional.","cre":"Idêntica em composição.","qpa":"Economize sem hesitar.","hue":"Um ovo é um ovo. Idêntico.","jamo":"Similar em sabor e textura.","sal":"Igual para caldos. Diferença no cachorro-quente.","atu":"Pode ter mais água e menos pedaço sólido.","sar":"Diferença mínima.","arr":"Arroz é arroz. Melhor troca do mercado.","pas":"Imperceptível para molhos grossos.","avi":"Aveia é aveia.","len":"Leguminosa não processada. Idêntica.","fri":"Economize sempre aqui.","gar":"Leguminosa enlatada. Idêntica.","tor":"Mesma massa nixtamalizada.","tom":"Idêntico para cozinhar.","pur":"Idêntico na cozinha.","chi":"Pode ser menos defumado.","elote":"Milho doce. Idêntico.","ace":"Troque sem hesitar.","ace2":"Verifique o rótulo: pode ser misturado.","saz":"Sem diferença possível.","azu":"Sacarose pura. Idêntica.","cals":"Menos glutamato e sabor concentrado.","may":"Menos ovo real, mais amido.","ket":"Genérico funciona para cozinhar.","mos":"Mostarda amarela básica. Idêntica.","pan":"Endurece mais rápido.","pan2":"Pode ter menos fibra real.","gal":"Igual para lanche.","gal2":"Genérico é menos crocante.","caf":"A marca importa aqui.","agu":"Mesmos padrões. Economize sempre.","jug":"Genérico tem mais açúcar adicionado.","te":"Folhas de chá. Processo idêntico.","ref":"Fórmulas únicas e patenteadas.","pap":"Menos tempero mas serve.","pop":"Menos manteiga real.","cho":"Menos cacau real.","nut":"Não processado = sem diferença.","det":"Menos enzimas. Não troque para manchas difíceis.","lim":"Idêntico para superfícies.","clo":"Hipoclorito de sódio. Idêntico.","pap2":"Mais fino e áspero.","pap3":"Absorve menos por folha.","sha":"Limpa igual, menos condicionadores.","jab2":"Idêntico para limpeza básica.","gel":"Álcool 70%. Idêntico.","pana":"Pode vazar mais com carga pesada.","toll":"Pano úmido neutro. Idêntico.","pca":"Menor percentual de proteína real.","pga":"O percentual de proteína importa.","pars":"Mesmo princípio ativo por lei.","ibu":"Mesmo princípio ativo por lei.","vit":"Ácido ascórbico. Idêntico.","cur":"Funciona igual.","hel":"Mais ar e menos creme real.","veg":"Vegetal congelado. Idêntico.","ore":"Erva seca. Sem diferença.","pimi":"Especiaria básica. Idêntica.","cane":"Especiaria básica. Idêntica."},
+fr:{"lec":"Composition identique. Meilleure économie.","lec2":"Même processus, même réduction de graisse.","man":"Égal pour cuisiner; différence notable à tartiner.","que":"Similaire fondu. Texture varie légèrement.","yog":"Moins de cultures déclarées mais fonctionnel.","cre":"Identique en composition.","qpa":"Économisez sans hésiter.","hue":"Un oeuf est un oeuf. Identique.","jamo":"Similaire en goût et texture.","sal":"Égal pour les soupes. Différence pour hot-dogs.","atu":"Peut avoir plus d'eau et moins de morceaux.","sar":"Différence minimale.","arr":"Le riz est le riz. Meilleur échange.","pas":"Imperceptible pour les sauces épaisses.","avi":"L'avoine est l'avoine.","len":"Légumineuse non transformée. Identique.","fri":"Économisez toujours ici.","gar":"Légumineuse en conserve. Identique.","tor":"Même pâte nixtamalisée.","tom":"Identique pour cuisiner.","pur":"Identique en cuisine.","chi":"Peut être moins fumé.","elote":"Maïs doux. Identique.","ace":"Changez sans hésiter.","ace2":"Vérifiez l'étiquette: peut être mélangé.","saz":"Aucune différence possible.","azu":"Saccharose pur. Identique.","cals":"Moins de glutamate et saveur concentrée.","may":"Moins d'oeuf réel, plus d'amidon.","ket":"Le générique fonctionne pour cuisiner.","mos":"Moutarde jaune basique. Identique.","pan":"Durcit plus vite.","pan2":"Peut avoir moins de vraie fibre.","gal":"Égal pour le grignotage.","gal2":"Le générique est moins croustillant.","caf":"La marque compte ici.","agu":"Mêmes normes. Économisez toujours.","jug":"Le générique a plus de sucre ajouté.","te":"Feuilles de thé. Processus identique.","ref":"Formules uniques et brevetées.","pap":"Moins d'assaisonnement mais ça marche.","pop":"Moins de vrai beurre.","cho":"Moins de vrai cacao.","nut":"Non transformé = aucune différence.","det":"Moins d'enzymes. Ne changez pas pour les taches difficiles.","lim":"Identique pour les surfaces.","clo":"Hypochlorite de sodium. Identique.","pap2":"Plus fin et rugueux.","pap3":"Absorbe moins par feuille.","sha":"Nettoie pareil, moins d'après-shampooing.","jab2":"Identique pour le nettoyage basique.","gel":"Alcool 70%. Identique.","pana":"Peut fuir davantage avec charge lourde.","toll":"Lingette neutre. Identique.","pca":"Pourcentage de protéines réelles plus faible.","pga":"Le pourcentage de protéines compte.","pars":"Même principe actif par loi.","ibu":"Même principe actif par loi.","vit":"Acide ascorbique. Identique.","cur":"Fonctionne pareil.","hel":"Plus d'air et moins de vraie crème.","veg":"Légume congelé. Identique.","ore":"Herbe sèche. Aucune différence.","pimi":"Épice basique. Identique.","cane":"Épice basique. Identique."},
+};
+
+// Brands per country group: mx=Mexico/LATAM, us=USA, es=Spain, br=Brazil, default=global
+// Format: {mx:"brand", us:"brand", es:"brand", br:"brand"}
+const PB={
+lec:  {mx:"Lala/Nestlé",   us:"Organic Valley/Horizon", es:"Puleva/Pascual",  br:"Parmalat/Itambé", default:"Nestlé"},
+lec2: {mx:"Lala/Alpura",   us:"Fairlife/Organic Valley", es:"Asturiana/Puleva",br:"Parmalat/Nestlé",  default:"Nestlé"},
+man:  {mx:"Lurpak/Lala",   us:"Land O'Lakes/Kerrygold",  es:"Kerrygold/Lurpak",br:"Aviação/Nestlé",   default:"Lurpak"},
+que:  {mx:"Kraft/Lala",    us:"Kraft/Sargento",          es:"Kraft/President", br:"Polenghi/Kraft",   default:"Kraft"},
+yog:  {mx:"Danone/Yoplait",us:"Chobani/Fage",            es:"Danone/Activia",  br:"Danone/Nestlé",    default:"Danone"},
+cre:  {mx:"Lala/Nestlé",   us:"Daisy/Breakstone's",      es:"President/Nestlé",br:"Nestlé/Itambé",    default:"Nestlé"},
+qpa:  {mx:"Lala/Alpura",   us:"Queso Fresco/Cacique",    es:"Burgos/President",br:"Minas/Polenghi",   default:"Local brand"},
+hue:  {mx:"Bachoco/San Juan",us:"Eggland's Best/Pete & Gerry's",es:"Pascual/Campofrío",br:"Mantiqueira/Korin",default:"Local brand"},
+jamo: {mx:"FUD/Bafar",     us:"Oscar Mayer/Boar's Head", es:"Campofrío/Navidul",br:"Sadia/Perdigão",  default:"Oscar Mayer"},
+sal:  {mx:"FUD/Bafar",     us:"Oscar Mayer/Ball Park",   es:"Campofrío/Argal", br:"Sadia/Perdigão",   default:"Oscar Mayer"},
+atu:  {mx:"Dolores/Herdez",us:"StarKist/Bumble Bee",     es:"Isabel/Calvo",    br:"Coqueiro/Gomes da Costa",default:"StarKist"},
+sar:  {mx:"Calmex",        us:"Crown Prince/Season",     es:"Isabel/Calvo",    br:"Gomes da Costa",   default:"Isabel"},
+arr:  {mx:"La Costeña/SOS",us:"Uncle Ben's/Mahatma",     es:"SOS/Nomen",       br:"Tio João/Camil",   default:"Uncle Ben's"},
+pas:  {mx:"Barilla/La Moderna",us:"Barilla/Ronzoni",     es:"Gallo/Barilla",   br:"Barilla/Isabela",  default:"Barilla"},
+avi:  {mx:"Quaker/Ángel",  us:"Quaker/Bob's Red Mill",   es:"Quaker/Blevit",   br:"Quaker/Nestlé",    default:"Quaker"},
+len:  {mx:"La Costeña",    us:"Goya/Bob's Red Mill",     es:"Luengo/Gallo",    br:"Camil/Kicaldo",    default:"Goya"},
+fri:  {mx:"La Costeña/Isadora",us:"Goya/Bush's",         es:"Goya/La Costeña", br:"Camil/Kicaldo",    default:"Goya"},
+gar:  {mx:"Del Monte/La Costeña",us:"Goya/Bush's",       es:"Luengo/Cidacos",  br:"Camil/Kicaldo",    default:"Goya"},
+tor:  {mx:"Maseca/Tía Rosa",us:"Mission/Maria",           es:"El Mexicano",     br:"Mission/Amigos",   default:"Mission"},
+tom:  {mx:"Del Monte/Herdez",us:"Hunt's/Del Monte",      es:"Orlando/Prima",   br:"Elefante/Quero",   default:"Hunt's"},
+pur:  {mx:"Herdez/Del Monte",us:"Hunt's/Contadina",      es:"Orlando/Apis",    br:"Elefante/Quero",   default:"Hunt's"},
+chi:  {mx:"La Costeña/Embasa",us:"La Costeña/Goya",      es:"La Costeña",      br:"La Costeña",       default:"La Costeña"},
+elote:{mx:"Del Monte/La Costeña",us:"Green Giant/Del Monte",es:"Bonduelle/Jolca",br:"Bonduelle/Quero", default:"Green Giant"},
+ace:  {mx:"Nutrioli/Patrona",us:"Crisco/Wesson",         es:"Coosur/La Masía", br:"Soya/Liza",        default:"Crisco"},
+ace2: {mx:"Bertolli/Carbonell",us:"Filippo Berio/Kirkland",es:"Carbonell/Hojiblanca",br:"Borges/Gallo",default:"Bertolli"},
+saz:  {mx:"La Fina/Morton",us:"Morton/Diamond Crystal",  es:"La Cocinera/Salinera",br:"Cisne/Lebre",   default:"Morton"},
+azu:  {mx:"Zulka/Domino",  us:"Domino/C&H",              es:"Azucarera/Domino",br:"União/Guarani",     default:"Domino"},
+cals: {mx:"Knorr/Maggi",   us:"Swanson/College Inn",     es:"Knorr/Gallina Blanca",br:"Knorr/Nestlé",  default:"Knorr"},
+may:  {mx:"Hellmann's/McCormick",us:"Hellmann's/Duke's", es:"Hellmann's/Ybarra",br:"Hellmann's/Mavonese",default:"Hellmann's"},
+ket:  {mx:"Heinz/Del Monte",us:"Heinz/Hunt's",           es:"Heinz/Orlando",   br:"Heinz/Quero",      default:"Heinz"},
+mos:  {mx:"French's/McCormick",us:"French's/Grey Poupon",es:"Maille/French's", br:"French's/Hemmer",  default:"French's"},
+pan:  {mx:"Bimbo/Wonder",  us:"Wonder/Nature's Own",     es:"Bimbo/La Brea",   br:"Bimbo/Wickbold",   default:"Bimbo"},
+pan2: {mx:"Bimbo/Marinela",us:"Dave's Killer/Nature's Own",es:"Bimbo/Silueta", br:"Bimbo/Seven Boys",  default:"Bimbo"},
+gal:  {mx:"Gamesa/Marinela",us:"Pepperidge Farm/Quaker", es:"Gullón/Digestive",br:"Isabela/Nestlé",    default:"Pepperidge Farm"},
+gal2: {mx:"Ritz/Sabritas", us:"Ritz/Nabisco",            es:"Tuc/Ritz",        br:"Ritz/Piraquê",      default:"Ritz"},
+caf:  {mx:"Nescafé/Lavazza",us:"Folgers/Maxwell House",  es:"Nescafé/Marcilla",br:"Nescafé/Melitta",   default:"Nescafé"},
+agu:  {mx:"Ciel/Bonafont", us:"Dasani/Aquafina",         es:"Font Vella/Evian",br:"Crystal/Bonafont",  default:"Evian"},
+jug:  {mx:"Tropicana/Del Valle",us:"Tropicana/Simply",   es:"Don Simón/Granini",br:"Del Valle/Minute Maid",default:"Tropicana"},
+te:   {mx:"Lipton/Tetley", us:"Lipton/Bigelow",          es:"Lipton/Hornimans",br:"Lipton/Leão",       default:"Lipton"},
+ref:  {mx:"Coca-Cola/Pepsi",us:"Coca-Cola/Pepsi",        es:"Coca-Cola/Pepsi", br:"Coca-Cola/Guaraná", default:"Coca-Cola"},
+pap:  {mx:"Sabritas/Ruffles",us:"Lay's/Pringles",        es:"Lay's/Ruffles",   br:"Elma Chips/Ruffles",default:"Lay's"},
+pop:  {mx:"Orville/Act II",us:"Orville/Pop Secret",      es:"Jolly Time/Act II",br:"Yoki/Elma Chips",  default:"Orville"},
+cho:  {mx:"Hershey's/Nestlé",us:"Lindt/Ghirardelli",     es:"Nestlé/Valor",    br:"Nestlé/Garoto",     default:"Nestlé"},
+nut:  {mx:"Wonderful/Planters",us:"Planters/Diamond",    es:"Borges/Planters", br:"Planters/Nutripack",default:"Planters"},
+det:  {mx:"Ariel/Persil",  us:"Tide/Persil",             es:"Ariel/Skip",      br:"Ariel/OMO",         default:"Ariel"},
+lim:  {mx:"Fabuloso/Pine-Sol",us:"Fabuloso/Mr. Clean",   es:"Fairy/Mr. Proper",br:"Veja/Flash Limp",   default:"Fabuloso"},
+clo:  {mx:"Cloralex/Clorox",us:"Clorox/Great Value",     es:"Estrella/Don Limpio",br:"Clorox/Qboa",    default:"Clorox"},
+pap2: {mx:"Kleenex/Charmin",us:"Charmin/Cottonelle",     es:"Scottex/Colhogar",br:"Neve/Personal",     default:"Charmin"},
+pap3: {mx:"Bounty/Scottex",us:"Bounty/Viva",             es:"Scottex/Plenty",  br:"Bounty/Snob",       default:"Bounty"},
+sha:  {mx:"Pantene/H&S",   us:"Pantene/Head&Shoulders",  es:"Pantene/Elvive",  br:"Pantene/Elseve",    default:"Pantene"},
+jab2: {mx:"Dove/Palmolive",us:"Dove/Irish Spring",       es:"Dove/Heno de Pravia",br:"Dove/Palmolive", default:"Dove"},
+gel:  {mx:"Purell/Lysol",  us:"Purell/Germ-X",           es:"Dettol/Sanytol",  br:"Purell/Dettol",     default:"Purell"},
+pana: {mx:"Pampers/Huggies",us:"Pampers/Huggies",        es:"Dodot/Huggies",   br:"Pampers/Huggies",   default:"Pampers"},
+toll: {mx:"Pampers/Huggies",us:"Pampers/Huggies",        es:"Dodot/Babysec",   br:"Pampers/Huggies",   default:"Pampers"},
+pca:  {mx:"Purina/Pedigree",us:"Purina/Blue Buffalo",    es:"Purina/Royal Canin",br:"Purina/Premier",  default:"Purina"},
+pga:  {mx:"Purina/Whiskas",us:"Purina/Blue Buffalo",     es:"Purina/Royal Canin",br:"Purina/Premier",  default:"Purina"},
+pars: {mx:"Tempra/Tylenol",us:"Tylenol/Advil",           es:"Panadol/Apiretal",br:"Tylenol/Novalgina", default:"Tylenol"},
+ibu:  {mx:"Advil/Motrin",  us:"Advil/Motrin",            es:"Nurofen/Ibuprofeno Kern",br:"Advil/Neo-Quimica",default:"Advil"},
+vit:  {mx:"Redoxon/Ester-C",us:"Emergen-C/Nature Made",  es:"Redoxon/Supradyn",br:"Redoxon/Cewin",     default:"Redoxon"},
+cur:  {mx:"Band-Aid/Nexcare",us:"Band-Aid/Nexcare",      es:"Band-Aid/Nexcare",br:"Band-Aid/Nexcare",  default:"Band-Aid"},
+hel:  {mx:"Häagen-Dazs/Nestlé",us:"Häagen-Dazs/Ben&Jerry's",es:"Häagen-Dazs/Nestlé",br:"Häagen-Dazs/Kibon",default:"Häagen-Dazs"},
+veg:  {mx:"Del Monte/Birds Eye",us:"Birds Eye/Green Giant",es:"Bonduelle/Findus",br:"Bonduelle/Mais Vita",default:"Birds Eye"},
+ore:  {mx:"McCormick",     us:"McCormick/Simply Organic", es:"McCormick/Ducros",br:"McCormick/Kitano",  default:"McCormick"},
+pimi: {mx:"McCormick",     us:"McCormick/Spice Islands",  es:"McCormick/Ducros",br:"McCormick/Kitano",  default:"McCormick"},
+cane: {mx:"McCormick",     us:"McCormick/Simply Organic", es:"McCormick/Ducros",br:"McCormick/Kitano",  default:"McCormick"},
+};
+
+function getBrand(id){
+  const b=PB[id];if(!b)return"Local brand";
+  const cid=cntry[0];
+  if(cid==="mx"||cid==="co"||cid==="ar"||cid==="cl"||cid==="pe")return b.mx||b.default;
+  if(cid==="us")return b.us||b.default;
+  if(cid==="es")return b.es||b.default;
+  if(cid==="br")return b.br||b.default;
+  if(cid==="uk"||cid==="fr")return b.es||b.default;
+  return b.default||b.mx;
+}
+
+// [id, cat, verdict, nut_b|null, nut_g|null]
+const P=[
+["lec","Lácteos",0,[150,8,12,8,12,115],[150,8,12,8,12,115]],
+["lec2","Lácteos",0,[90,8,12,0,12,130],[90,8,12,0,12,130]],
+["man","Lácteos",1,[100,0,0,11,0,90],[100,0,0,11,0,95]],
+["que","Lácteos",1,[80,5,1,7,0,410],[75,4,1,6,0,430]],
+["yog","Lácteos",1,[100,17,6,1,6,95],[90,14,7,1,7,85]],
+["cre","Lácteos",0,[60,1,2,6,1,15],[60,1,2,6,1,18]],
+["qpa","Lácteos",0,[70,7,1,4,0,200],[70,7,1,4,0,210]],
+["hue","Proteína",0,[70,6,0,5,0,70],[70,6,0,5,0,70]],
+["jamo","Proteína",1,[60,8,2,2,0,580],[55,7,2,2,0,600]],
+["sal","Proteína",1,[180,7,2,16,0,540],[170,6,2,15,0,560]],
+["atu","Proteína",1,[100,22,0,1,0,320],[90,20,0,1,0,350]],
+["sar","Proteína",0,[150,14,3,9,0,380],[148,13,3,9,0,400]],
+["arr","Granos",0,[130,3,28,0,0,1],[130,3,28,0,0,1]],
+["pas","Granos",1,[352,13,70,2,3,6],[350,12,71,1,3,8]],
+["avi","Granos",0,[150,5,27,3,1,0],[150,5,27,3,1,0]],
+["len","Granos",0,[116,9,20,0,0,2],[116,9,20,0,0,2]],
+["fri","Granos",0,[110,7,20,1,0,390],[110,7,19,1,0,420]],
+["gar","Granos",0,[120,7,22,2,0,320],[120,7,22,2,0,340]],
+["tor","Granos",0,[50,1,10,1,0,15],[50,1,10,1,0,18]],
+["tom","Enlatados",0,[40,2,9,0,6,350],[38,2,9,0,6,380]],
+["pur","Enlatados",0,[35,1,8,0,5,20],[35,1,8,0,5,25]],
+["chi","Enlatados",1,[25,1,4,0,2,430],[22,1,4,0,2,450]],
+["elote","Enlatados",0,[70,2,15,1,5,290],[70,2,15,1,5,310]],
+["ace","Aceites",0,[120,0,0,14,0,0],[120,0,0,14,0,0]],
+["ace2","Aceites",1,[120,0,0,14,0,0],[119,0,0,13,0,0]],
+["saz","Condimentos",0,[0,0,0,0,0,590],[0,0,0,0,0,590]],
+["azu","Condimentos",0,[15,0,4,0,4,0],[15,0,4,0,4,0]],
+["cals","Condimentos",1,[15,1,2,0,0,860],[12,1,2,0,0,900]],
+["may","Condimentos",1,[90,0,1,10,0,90],[85,0,2,9,0,100]],
+["ket","Condimentos",1,[20,0,5,0,4,160],[20,0,5,0,5,180]],
+["mos","Condimentos",0,[5,0,0,0,0,120],[5,0,0,0,0,125]],
+["pan","Panadería",2,[70,2,13,1,2,130],[65,2,12,1,1,140]],
+["pan2","Panadería",1,[80,3,14,1,2,140],[75,3,13,1,2,150]],
+["gal","Panadería",1,[130,2,20,5,8,90],[125,2,19,5,8,95]],
+["gal2","Panadería",1,[80,1,10,4,1,115],[75,1,10,3,1,120]],
+["caf","Bebidas",2,[5,0,1,0,0,5],[5,0,1,0,0,5]],
+["agu","Bebidas",0,[0,0,0,0,0,0],[0,0,0,0,0,0]],
+["jug","Bebidas",2,[110,2,26,0,22,0],[120,1,30,0,28,15]],
+["te","Bebidas",0,[0,0,0,0,0,0],[0,0,0,0,0,0]],
+["ref","Bebidas",2,[90,0,25,0,25,45],[85,0,24,0,24,40]],
+["pap","Snacks",1,[150,2,16,9,0,170],[145,2,16,9,0,185]],
+["pop","Snacks",1,[130,2,15,7,0,310],[125,2,15,7,0,330]],
+["cho","Snacks",1,[150,2,16,9,8,10],[145,2,16,9,9,12]],
+["nut","Snacks",0,[170,5,8,14,2,0],[170,5,8,14,2,0]],
+["det","Limpieza",2,null,null],
+["lim","Limpieza",0,null,null],
+["clo","Limpieza",0,null,null],
+["pap2","Limpieza",2,null,null],
+["pap3","Limpieza",1,null,null],
+["sha","Higiene",1,null,null],
+["jab2","Higiene",0,null,null],
+["gel","Higiene",0,null,null],
+["pana","Bebés",1,null,null],
+["toll","Bebés",0,null,null],
+["pca","Mascotas",1,null,null],
+["pga","Mascotas",1,null,null],
+["pars","Farmacia",0,null,null],
+["ibu","Farmacia",0,null,null],
+["vit","Farmacia",0,null,null],
+["cur","Farmacia",0,null,null],
+["hel","Congelados",1,[200,3,24,11,20,65],[180,2,25,9,20,70]],
+["veg","Congelados",0,[50,3,10,0,3,40],[50,3,10,0,3,45]],
+["ore","Especias",0,[5,0,1,0,0,1],[5,0,1,0,0,1]],
+["pimi","Especias",0,[6,0,1,0,0,1],[6,0,1,0,0,1]],
+["cane","Especias",0,[6,0,2,0,0,0],[6,0,2,0,0,0]],
+];
+
+const COUNTRIES=[
+["mx","México","🇲🇽","$","MXN",[["wm","Walmart","Great Value"],["ch","Chedraui","Chedraui"],["so","Soriana","Soriana"],["co","Costco","Kirkland"],["ba","Bodega Aurrerá","Great Value"],["hb","HEB","Hill Country Fare"],["sm","Súper Maz","Súper Maz"],["sl","Casa Ley","Casa Ley"],["al","Alsuper","Alsuper"],["sp","Sam's Club","Member's Mark"],["cal","Calimax","Calimax"],["lc","La Comer","La Comer"]]],
+["us","Estados Unidos","🇺🇸","$","USD",[["wus","Walmart","Great Value"],["tg","Target","Good & Gather"],["kr","Kroger","Kroger Brand"],["cus","Costco","Kirkland"],["al2","ALDI","ALDI Brand"],["tr","Trader Joe's","Trader Joe's"],["heb","H-E-B (Texas)","H-E-B Brand"],["pub","Publix","GreenWise"],["spr","Sprouts","Sprouts Brand"],["alb","Albertsons","Signature Select"],["saf","Safeway","Signature Select"],["frd","Fred Meyer","Kroger Brand"],["win","WinCo Foods","WinCo Brand"],["wnd","Winn-Dixie","SE Grocers"],["mij","Meijer","Meijer Brand"],["fl","Food Lion","Food Lion"],["gnt","Giant Food","Giant Brand"],["wf","Whole Foods","365"]]],
+["es","España","🇪🇸","€","EUR",[["me","Mercadona","Hacendado"],["li","Lidl","Lidl Brand"],["ca","Carrefour","Carrefour"],["di","Dia","Dia"],["al3","Alcampo","Auchan"],["er","Eroski","Eroski"],["co2","Consum","Consum"],["hi","HiperCor","El Corte Inglés"]]],
+["co","Colombia","🇨🇴","$","COP",[["ex","Éxito","Éxito"],["ju","Jumbo","Jumbo"],["d1","D1","D1 Brand"],["ar","Ara","Ara"],["olf","Olímpica","Génesis"],["pr","PriceSmart","PriceSmart"]]],
+["ar","Argentina","🇦🇷","$","ARS",[["car","Carrefour","Carrefour"],["di2","Dia","Dia"],["ct","Coto","Coto"],["jua","Jumbo","Jumbo"],["dis","Disco","Disco"]]],
+["cl","Chile","🇨🇱","$","CLP",[["juc","Jumbo","Jumbo"],["ld","Líder","Great Value"],["tt","Tottus","Tottus"],["uni","Unimarc","Unimarc"],["acu","Acuenta","Acuenta"]]],
+["uk","Reino Unido","🇬🇧","£","GBP",[["te","Tesco","Tesco Own"],["sa","Sainsbury's","Basics"],["as","ASDA","Smart Price"],["alu","ALDI","ALDI Brand"],["lid","Lidl","Lidl Brand"],["mor","Morrisons","Morrisons"]]],
+["br","Brasil","🇧🇷","R$","BRL",[["cbr","Carrefour","Carrefour"],["at","Atacadão","Atacadão"],["ass","Assaí","Assaí"],["pau","Pão de Açúcar","Qualitá"]]],
+["pe","Perú","🇵🇪","S/","PEN",[["pl","Plaza Vea","Bell's"],["ttt","Tottus","Tottus"],["me2","Metro","Metro"],["mas","Mass","Mass"]]],
+];
+
+const TAX={
+mx:["IVA",0.16,false,[["Nacional",0.16],["Zona fronteriza norte",0.08]]],
+us:["Sales Tax",0.085,true,[["Alabama",0.04],["Alaska",0.00],["Arizona",0.056],["Arkansas",0.065],["California",0.0725],["Colorado",0.029],["Connecticut",0.0635],["Delaware",0.00],["Florida",0.06],["Georgia",0.04],["Hawaii",0.04],["Idaho",0.06],["Illinois",0.0625],["Indiana",0.07],["Iowa",0.06],["Kansas",0.065],["Kentucky",0.06],["Louisiana",0.0445],["Maine",0.055],["Maryland",0.06],["Massachusetts",0.0625],["Michigan",0.06],["Minnesota",0.06875],["Mississippi",0.07],["Missouri",0.04225],["Montana",0.00],["Nebraska",0.055],["Nevada",0.0685],["New Hampshire",0.00],["New Jersey",0.06625],["New Mexico",0.05125],["New York",0.04],["North Carolina",0.0475],["North Dakota",0.05],["Ohio",0.0575],["Oklahoma",0.045],["Oregon",0.00],["Pennsylvania",0.06],["Rhode Island",0.07],["South Carolina",0.06],["South Dakota",0.045],["Tennessee",0.07],["Texas",0.0625],["Utah",0.0485],["Vermont",0.06],["Virginia",0.053],["Washington",0.065],["West Virginia",0.06],["Wisconsin",0.05],["Wyoming",0.04]]],
+es:["IVA",0.21,false,[["Estándar",0.21],["Reducido",0.10],["Superreducido",0.04],["Canarias",0.07],["Ceuta/Melilla",0.00]]],
+co:["IVA",0.19,false,[["Nacional",0.19],["Alimentos básicos",0.00]]],
+ar:["IVA",0.21,false,[["Nacional",0.21],["Reducido",0.105],["Buenos Aires+prov.",0.24],["Tierra del Fuego",0.00]]],
+cl:["IVA",0.19,false,[["Nacional",0.19]]],
+uk:["VAT",0.20,false,[["Standard",0.20],["Reduced",0.05],["Food/medicine",0.00]]],
+br:["ICMS",0.17,false,[["São Paulo",0.18],["Rio de Janeiro",0.20],["Minas Gerais",0.18],["Bahia",0.19],["Otros",0.17]]],
+pe:["IGV",0.18,false,[["Nacional",0.18],["Zona franca",0.00]]],
+};
+
+const BASE={mx:22,us:3,es:2.2,co:4500,ar:950,cl:1300,uk:1.8,br:7,pe:4};
+const VD_C=[{c:"#16a34a",bg:"#dcfce7"},{c:"#d97706",bg:"#fef3c7"},{c:"#dc2626",bg:"#fee2e2"}];
+const NU_U=["kcal","g","g","g","g","mg"];
+
+let langIdx=0,lang="es";
+let cntry=COUNTRIES[0],store=COUNTRIES[0][5][0],activeCat="Todos";
+let cart=[],calcRows=[{id:1,name:"",price:"",qty:1}],rowId=2;
+let calcTip=0,discType="pct",stateIdx=0;
+
+function L(){return T[lang];}
+function getPrice(pid,cid,gen){const s=pid.split("").reduce((a,c)=>a+c.charCodeAt(0),0);const b=(BASE[cid]||22)*(1+(s%8)*0.28);return+(gen?b*0.60:b).toFixed(2);}
+function pname(id){const i=LANGS.indexOf(lang);const n=PN[id];return n?n[i]||n[0]:id;}
+function pnote(id){return(NOTE[lang]||NOTE.es)[id]||"";}
+
+function toggleLang(){
+  langIdx=(langIdx+1)%LANGS.length;
+  lang=LANGS[langIdx];
+  applyLang();renderCats();renderProducts();renderCart();
+}
+
+function applyLang(){
+  const l=L();
+  document.getElementById("logo-sub").textContent=l.sub;
+  document.getElementById("lang-btn").textContent=LN[lang];
+  document.getElementById("tab-comparar").textContent=l.tab1;
+  document.getElementById("tab-lista").textContent=cart.length>0?`${l.tab2} (${cart.length})`:l.tab2;
+  document.getElementById("tab-calc").textContent=l.tab3;
+  document.getElementById("search").placeholder=l.search;
+  document.getElementById("empty-title").textContent=l.empty1;
+  document.getElementById("empty-sub").textContent=l.empty2;
+  document.getElementById("calc-title").textContent=l.calctit;
+  document.getElementById("calc-sub").textContent=l.calcsub;
+  document.getElementById("add-row-btn").textContent=l.addrow;
+  document.getElementById("config-title").textContent=l.conftit;
+  document.getElementById("state-label").textContent=l.statelbl;
+  document.getElementById("reset-btn").textContent=l.reset;
+  document.getElementById("tip-label").textContent=l.tiplbl;
+  document.getElementById("tip-none").textContent=l.tipnone;
+  document.getElementById("disc-label").textContent=l.disclbl;
+  document.getElementById("budget-label").textContent=l.budlbl;
+  document.getElementById("budgetinput").placeholder=l.budph;
+  document.getElementById("summary-title").textContent=l.sumtit;
+  document.getElementById("lbl-subtotal").textContent=l.subtotal;
+  document.getElementById("lbl-after").textContent=l.afterdisc;
+  document.getElementById("lbl-total").textContent=l.total;
+  document.getElementById("lbl-mylist").textContent=l.mylist.toUpperCase();
+  document.getElementById("lbl-allbrand").textContent=l.allbrand.toUpperCase();
+  document.getElementById("lbl-saved").textContent=l.saved;
+  document.getElementById("dontitle").textContent=l.dontit;
+  document.getElementById("dontext").innerHTML=l.dontxt;
+  document.querySelector(".kofi").textContent=l.donk;
+  document.querySelector(".bmac").textContent=l.donb;
+  document.getElementById("disclaimer-text").innerHTML=l.dis;
+  document.getElementById("fdis-text").innerHTML=l.dis;
+  const gl=document.getElementById("generic-label");
+  if(gl)gl.innerHTML=l.gen+": <strong id='sgeneric' style='color:#16a34a'>"+store[2]+"</strong>";
+}
+
+window.onload=function(){
+  const csel=document.getElementById("csel");
+  COUNTRIES.forEach(c=>{const o=document.createElement("option");o.value=c[0];o.textContent=c[2]+" "+c[1];csel.appendChild(o);});
+  renderStores();renderCats();renderProducts();applyLang();
+};
+
+function onCountry(){cntry=COUNTRIES.find(c=>c[0]===document.getElementById("csel").value);store=cntry[5][0];renderStores();renderProducts();renderCart();updateCalcTax();}
+function onStore(){store=cntry[5].find(s=>s[0]===document.getElementById("ssel").value);renderProducts();renderCart();}
+function renderStores(){const el=document.getElementById("ssel");el.innerHTML="";cntry[5].forEach(s=>{const o=document.createElement("option");o.value=s[0];o.textContent=s[1];el.appendChild(o);});store=cntry[5][0];}
+
+function setTab(id,btn){
+  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("on"));
+  document.querySelectorAll(".tbtn").forEach(b=>b.classList.remove("on"));
+  document.getElementById("panel-"+id).classList.add("on");
+  if(btn)btn.classList.add("on");
+  document.getElementById("swrap").style.display=id==="comparar"?"flex":"none";
+  if(id==="lista")renderCart();
+  if(id==="calc")syncCalc();
+}
+
+function renderCats(){
+  const allCats=["Todos",...Object.keys(CC)];
+  const wrap=document.getElementById("cpills");wrap.innerHTML="";
+  allCats.forEach(c=>{
+    const cfg=CC[c];const on=c===activeCat;
+    const btn=document.createElement("button");btn.className="cpill";
+    btn.textContent=(cfg?cfg.i+" ":"")+c;
+    btn.style.cssText=`background:${on&&cfg?cfg.c:cfg?cfg.bg:"#fff"};color:${on&&cfg?"#fff":cfg?cfg.c:"#64748b"};border-color:${cfg?cfg.c+"44":"#e2e8f0"}`;
+    btn.onclick=()=>{activeCat=c;renderCats();renderProducts();};
+    wrap.appendChild(btn);
+  });
+}
+
+function renderProducts(){
+  const l=L();const q=(document.getElementById("search").value||"").toLowerCase();
+  const cid=cntry[0],sym=cntry[3];
+  const filtered=P.filter(p=>{
+    const name=pname(p[0]).toLowerCase();
+    return(activeCat==="Todos"||p[1]===activeCat)&&name.includes(q);
+  });
+  document.getElementById("pcount").textContent=filtered.length+" "+l.prods;
+  document.getElementById("sname").textContent=store[1];
+  const sg=document.getElementById("sgeneric");if(sg)sg.textContent=store[2];
+  const grid=document.getElementById("pgrid");grid.innerHTML="";
+  filtered.forEach(p=>{
+    const[id,cat,verd,nb,ng]=p;
+    const brand=getBrand(id);
+    const cfg=CC[cat]||DC;
+    const vd=VD_C[verd];const vl=l.vd[verd];
+    const name=pname(id);const note=pnote(id);
+    const bp=getPrice(id,cid,false),gp=getPrice(id,cid,true);
+    const sav=(bp-gp).toFixed(2),savP=Math.round((bp-gp)/bp*100);
+    const inCart=!!cart.find(i=>i.id===id);
+    let nutHTML="";
+    if(nb&&ng){
+      const nk=l.nut_k;
+      const rows=nk.map((k,i)=>{const bv=nb[i],gv=ng[i],d=gv-bv;const dc=d===0?"#16a34a":Math.abs(d)<5?"#d97706":"#dc2626";const diff=d!==0?`<span style="font-size:9px;color:${d>0?"#dc2626":"#16a34a"};margin-left:2px">${d>0?"+":""}${d}</span>`:"";return`<tr><td style="color:#64748b;padding:4px 0;border-top:1px solid #f1f5f9">${k}</td><td style="text-align:center;color:#64748b;padding:4px 0;border-top:1px solid #f1f5f9">${bv}${NU_U[i]}</td><td style="text-align:center;color:${dc};padding:4px 0;border-top:1px solid #f1f5f9">${gv}${NU_U[i]}${diff}</td></tr>`;}).join("");
+      nutHTML=`<button class="ntoggle" onclick="toggleNut('${id}')"><span>${l.nut}</span><span id="na-${id}">▾</span></button><div class="ntable" id="nt-${id}"><table><thead><tr><th></th><th style="text-align:center;color:#64748b">${l.marca}</th><th style="text-align:center;color:${cfg.c}">${l.generico}</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+    }
+    const removeBtn=inCart?`<button class="ab abr" onclick="removeCart('${id}')">✕</button>`:"";
+    const card=document.createElement("div");card.className="pcard";card.id="pc-"+id;
+    card.innerHTML=`<div class="pbar" style="background:${cfg.c}"></div><div class="pbody"><div class="phead"><div style="display:flex;gap:10px;align-items:center"><div class="picon" style="background:${cfg.bg}">${cfg.i}</div><div><div class="pname">${name}</div><div class="pbrand">${brand}</div></div></div><div class="vbadge" style="background:${vd.bg};color:${vd.c}">${vl}</div></div><div class="p2grid"><div class="pbox" style="background:#f8fafc;border-color:#f1f5f9"><div class="plabel" style="color:#94a3b8">${l.marca}</div><div class="pval" style="color:#64748b">${sym}${bp}</div><div class="pbrlbl" style="color:#cbd5e1">${brand.split("/")[0]}</div></div><div class="pbox" style="background:${cfg.bg};border-color:${cfg.c}33"><div class="plabel" style="color:${cfg.c}">${l.generico}</div><div class="pval" style="color:${cfg.c}">${sym}${gp}</div><div class="pbrlbl" style="color:${cfg.c}99">${store[2]}</div></div></div><div class="savebar"><span>${l.saves}${sym}${sav}</span><span class="savepct">${savP}${l.less}</span></div><div class="pnote">${note}</div>${nutHTML}<div class="brow"><button class="ab" style="background:${cfg.c};color:#fff;border-color:${cfg.c};flex:1" onclick="addCart('${id}',true)">${l.addGen}</button><button class="ab abgr" onclick="addCart('${id}',false)">${l.addBr}</button>${removeBtn}</div></div>`;
+    grid.appendChild(card);
+  });
+}
+
+function toggleNut(id){const el=document.getElementById("nt-"+id);const ar=document.getElementById("na-"+id);const open=el.style.display==="block";el.style.display=open?"none":"block";if(ar)ar.textContent=open?"▾":"▴";}
+function addCart(id,gen){const p=P.find(x=>x[0]===id);if(!p)return;const price=getPrice(id,cntry[0],gen),bp=getPrice(id,cntry[0],false);const brand=getBrand(id);const ex=cart.findIndex(i=>i.id===id);if(ex>=0)cart[ex]={...cart[ex],gen,price,bp,brand};else cart.push({id,cat:p[1],name:pname(id),brand,gen,price,bp});updateCartBadge();renderProducts();}
+function removeCart(id){cart=cart.filter(i=>i.id!==id);updateCartBadge();renderProducts();renderCart();}
+function updateCartBadge(){const l=L();const btn=document.getElementById("tab-lista");btn.textContent=cart.length>0?`${l.tab2} (${cart.length})`:l.tab2;}
+
+function renderCart(){
+  const l=L();const sym=cntry[3],cur=cntry[4];
+  const csum=document.getElementById("csum");const cempty=document.getElementById("cempty");const citems=document.getElementById("citems");
+  if(cart.length===0){csum.style.display="none";cempty.style.display="block";citems.innerHTML="";return;}
+  cempty.style.display="none";csum.style.display="grid";
+  const t=cart.reduce((s,i)=>s+i.price,0);const tb=cart.reduce((s,i)=>s+i.bp,0);const saved=tb-t,pct=tb>0?(saved/tb*100):0;
+  document.getElementById("sv-t").textContent=sym+t.toFixed(2);document.getElementById("sv-cur").textContent=cur;
+  document.getElementById("sv-tb").textContent=sym+tb.toFixed(2);document.getElementById("sv-cur2").textContent=cur;
+  document.getElementById("sv-saved").textContent=sym+saved.toFixed(2);
+  document.getElementById("sv-pct").textContent=pct.toFixed(0)+l.lessall;
+  citems.innerHTML="";
+  cart.forEach(item=>{
+    const cfg=CC[item.cat]||DC;const div=document.createElement("div");div.className="citem";
+    div.innerHTML=`<div class="cileft"><div class="ciicon" style="background:${cfg.bg}">${cfg.i}</div><div><div class="ciname">${item.name}</div><div class="citype" style="color:${item.gen?"#16a34a":"#94a3b8"}">${item.gen?"✓ "+store[2]:item.brand}</div></div></div><div class="ciright"><div><div class="ciprice" style="color:${item.gen?"#16a34a":"#64748b"}">${sym}${item.price.toFixed(2)}</div>${item.gen?`<div class="cisave">${l.saves}${sym}${(item.bp-item.price).toFixed(2)}</div>`:""}</div><button class="delbtn" onclick="removeCart('${item.id}')">✕</button></div>`;
+    citems.appendChild(div);
+  });
+}
+
+function updateCalcTax(){
+  const l=L();const cid=cntry[0];const tax=TAX[cid]||["IVA",0.16,false,[["Nacional",0.16]]];const states=tax[3]||[];
+  document.getElementById("taxlbl").textContent=tax[0];document.getElementById("c-taxlbl").textContent=tax[0];
+  document.getElementById("discsym").textContent=cntry[3];document.getElementById("c-cur").textContent=cntry[4];
+  const sw=document.getElementById("statewrap");const ssel=document.getElementById("statesel");
+  if(states.length>1){sw.style.display="block";ssel.innerHTML="";states.forEach(([n],i)=>{const o=document.createElement("option");o.value=i;o.textContent=n;ssel.appendChild(o);});stateIdx=0;document.getElementById("taxinput").value=(states[0][1]*100).toFixed(1);}
+  else{sw.style.display="none";document.getElementById("taxinput").value=(tax[1]*100).toFixed(1);}
+  document.getElementById("tipwrap").style.display=tax[2]?"block":"none";calcUpdate();
+}
+function onState(){const cid=cntry[0];const tax=TAX[cid];if(!tax)return;stateIdx=parseInt(document.getElementById("statesel").value);document.getElementById("taxinput").value=(tax[3][stateIdx][1]*100).toFixed(1);calcUpdate();}
+function resetTax(){const cid=cntry[0];const tax=TAX[cid]||["IVA",0.16,false,[]];const states=tax[3]||[];const rate=states.length>1?states[stateIdx][1]:tax[1];document.getElementById("taxinput").value=(rate*100).toFixed(1);calcUpdate();}
+function setTip(v,btn){calcTip=v;document.querySelectorAll(".tipbtn").forEach(b=>b.classList.remove("on"));btn.classList.add("on");calcUpdate();}
+function setDiscType(type,btn){discType=type;document.querySelectorAll(".dtypebtn").forEach(b=>b.classList.remove("on"));btn.classList.add("on");calcUpdate();}
+function addRow(){calcRows.push({id:rowId++,name:"",price:"",qty:1});renderCalcRows();}
+function removeRow(id){calcRows=calcRows.filter(r=>r.id!==id);renderCalcRows();calcUpdate();}
+function updateRow(id,key,val){const r=calcRows.find(r=>r.id===id);if(r){r[key]=val;calcUpdate();}}
+function renderCalcRows(){
+  const l=L();const sym=cntry[3];const wrap=document.getElementById("crows");wrap.innerHTML="";
+  calcRows.forEach((row,idx)=>{const div=document.createElement("div");div.className="irow";div.innerHTML=`<input class="cinput" placeholder="${l.calctit.replace('🛍️ ','')} ${idx+1}" value="${row.name}" oninput="updateRow(${row.id},'name',this.value)"/><div style="position:relative"><span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:12px;color:#94a3b8">${sym}</span><input type="number" class="cinput" style="padding-left:20px" placeholder="0.00" value="${row.price||""}" oninput="updateRow(${row.id},'price',this.value)"/></div><input type="number" class="cinput" style="text-align:center" min="1" value="${row.qty}" oninput="updateRow(${row.id},'qty',this.value)"/><button class="delbtn" onclick="removeRow(${row.id})">✕</button>`;wrap.appendChild(div);});calcUpdate();
+}
+function syncCalc(){if(cart.length===0)return;calcRows=cart.map((item,i)=>({id:i+100,name:item.name,price:item.price.toFixed(2),qty:1}));rowId=200;const imp=document.getElementById("cimported");imp.style.display="block";imp.textContent=L().imported.replace("{n}",cart.length);renderCalcRows();updateCalcTax();}
+function calcUpdate(){
+  const l=L();const sym=cntry[3];
+  const taxRate=(parseFloat(document.getElementById("taxinput").value)||0)/100;
+  const discVal=parseFloat(document.getElementById("discinput").value)||0;
+  const budget=parseFloat(document.getElementById("budgetinput").value)||0;
+  const sub=calcRows.reduce((s,r)=>s+(parseFloat(r.price)||0)*(parseInt(r.qty)||1),0);
+  const discAmt=discType==="pct"?sub*discVal/100:discVal;
+  const afterDisc=Math.max(0,sub-discAmt);
+  const taxAmt=afterDisc*taxRate;const tipAmt=afterDisc*calcTip/100;const total=afterDisc+taxAmt+tipAmt;
+  document.getElementById("c-sub").textContent=sym+sub.toFixed(2);
+  if(discAmt>0){document.getElementById("c-drow").style.display="flex";document.getElementById("c-arow").style.display="flex";document.getElementById("c-dlabel").textContent=`${l.disclbl} (${discType==="pct"?discVal+"%":sym+discVal})`;document.getElementById("c-dval").textContent="-"+sym+discAmt.toFixed(2);document.getElementById("c-aval").textContent=sym+afterDisc.toFixed(2);}
+  else{document.getElementById("c-drow").style.display="none";document.getElementById("c-arow").style.display="none";}
+  document.getElementById("c-taxval").textContent=sym+taxAmt.toFixed(2);
+  if(calcTip>0){document.getElementById("c-tiprow").style.display="flex";document.getElementById("c-tiplbl").textContent=`${l.tiplbl} (${calcTip}%)`;document.getElementById("c-tipval").textContent=sym+tipAmt.toFixed(2);}
+  else document.getElementById("c-tiprow").style.display="none";
+  document.getElementById("c-total").textContent=sym+total.toFixed(2);
+  const alert=document.getElementById("budgetalert");const bbar=document.getElementById("bbar");const bfill=document.getElementById("bfill");
+  if(budget>0){bbar.style.display="block";const pct=Math.min(total/budget*100,100);bfill.style.width=pct+"%";bfill.style.background=total>budget?"#dc2626":"#16a34a";
+    if(total>budget){alert.className="alert alertr";alert.textContent=l.over.replace("{s}",sym).replace("{a}",(total-budget).toFixed(2));}
+    else{alert.className="alert alertg";alert.textContent=l.under.replace("{s}",sym).replace("{a}",(budget-total).toFixed(2));}}
+  else{alert.textContent="";bbar.style.display="none";}
+}
+</script></body></html>
